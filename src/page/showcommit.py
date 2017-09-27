@@ -254,6 +254,11 @@ def renderCommitFiles(db, target, user, repository, review, changeset=None, chan
 
         section = commit_files.tbody()
 
+        if review:
+            row = section.tr(style="display: none")
+            checkbox_everything = row.td("approve everything").input(type="checkbox", __generator__=True)
+            row.td().text("Everything")
+
         for file_id, file_path, in_parent in files:
             row = section.tr(critic_file_id=file_id)
             fully_approved = True

@@ -160,10 +160,21 @@ function markFile(status, file_id, parent_index)
 
 function markAllFiles(status)
 {
-  var changeset_ids = changeset.ids;
-  var file_ids = [];
+  var changeset_ids;
+  var reviewableFiles;
 
-  var reviewableFiles = changeset.reviewableFiles;
+  if (window.selectedParent !== null)
+  {
+      changeset_ids = [changeset[window.selectedParent].id];
+      reviewableFiles = changeset[window.selectedParent].reviewableFiles;
+  }
+  else
+  {
+      changeset_ids = changeset.ids;
+      reviewableFiles = changeset.reviewableFiles;
+  }
+
+  var file_ids = [];
 
   for (var file_id in reviewableFiles)
     if (/^\d+$/.test(file_id) && reviewableFiles[file_id] != status)
@@ -184,8 +195,13 @@ function markAllFiles(status)
 
   if (result)
   {
-    for (var index = 0; index < file_ids.length; ++index)
-      reviewableFiles[file_ids[index]] = status;
+    for (var index = 0; index < file_ids.length; ++index) {
+      var file_id = file_ids[index];
+      reviewableFiles[file_id] = status;
+      var id_prefix = window.selectedParent !== null ? "p" + window.selectedParent : "";
+      var checkbox = document.getElementById(id_prefix + "a" + file_id);
+      checkbox.checked = status == "reviewed";
+    }
     updateDraftStatus(result.draft_status);
   }
   else
@@ -496,11 +512,6 @@ $(document).ready(function ()
         if (target.parents("td").hasClass("everything"))
         {
           markAllFiles(ev.currentTarget.checked ? "reviewed" : "pending");
-
-          target.parents("table").find("td.approve.file input").each(function (index, element)
-            {
-              element.checked = ev.currentTarget.checked;
-            });
         }
         else
         {

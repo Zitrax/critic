@@ -571,6 +571,10 @@ function selectParent(index)
 
   $(".parent" + index).addClass("show");
 
+  var everything_checkbox = $("td.approve.everything > input");
+  everything_checkbox.parent().parent().show();
+  everything_checkbox.prop('checked', $('input[id^=p' + index + ']').not(':checked').length === 0);
+
   selectedParent = index;
 
   if (typeof CommentMarkers != "undefined")
